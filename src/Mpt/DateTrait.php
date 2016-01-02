@@ -23,7 +23,7 @@ trait DateTrait
         return $this->year;
     }
 
-    public function setYear($year)
+    public function setYear(int $year): PrayerTimeProvider
     {
         $this->year = $year;
         return $this;
@@ -38,7 +38,7 @@ trait DateTrait
         return $this->month;
     }
 
-    public function setMonth($month)
+    public function setMonth(int $month): PrayerTimeProvider
     {
         $this->month = $month;
         return $this;

@@ -5,13 +5,13 @@ namespace Mpt;
 interface PrayerTimeProvider
 {
 
-    public function getProviderName();
+    public function getProviderName(): string;
 
-    public function getCodeByCoordinates($lat, $lng, $acc = 0);
+    public function getCodeByCoordinates(float $lat, float $lng, int $acc = 0): string;
 
-    public function getTimesByCode($code);
+    public function getTimesByCode(String $code): PrayerData;
 
-    public function setYear($year);
+    public function setYear(int $year): PrayerTimeProvider;
 
-    public function setMonth($month);
+    public function setMonth(int $month): PrayerTimeProvider;
 }
