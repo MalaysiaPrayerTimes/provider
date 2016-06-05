@@ -1,8 +1,9 @@
 {
-    "name": "mpt/server",
+    "name": "mpt/provider",
     "type": "library",
     "require": {
-        "php": ">=7.0.1"
+        "php": ">=7.0.0",
+        "fabpot/goutte": "~3.1"
     },
     "autoload": {
         "psr-4": {
