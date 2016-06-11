@@ -31,7 +31,7 @@ class Provider
     {
         $this->throwIfNoProviders();
 
-        $cache = $this->getCachedPrayerData($code);
+        $cache = $this->getCachedPrayerData($code, $this->getYear(), $this->getMonth());
 
         if (!is_null($cache)) {
             return $cache;
@@ -90,13 +90,13 @@ class Provider
         return $this;
     }
 
-    private function getCachedPrayerData($code)
+    private function getCachedPrayerData($code, $year, $month)
     {
         if (is_null($this->cache)) {
             return null;
         }
 
-        return $this->cache->getPrayerData($code);
+        return $this->cache->getPrayerData($code, $year, $month);
     }
 
     private function cachePrayerData(PrayerData $data)

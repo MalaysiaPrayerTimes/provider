@@ -12,7 +12,7 @@ interface CacheInterface
      * @param $code
      * @return PrayerData|null
      */
-    public function getPrayerData($code);
+    public function getPrayerData($code, $year, $month);
 
     public function cachePrayerData(PrayerData $data);
 

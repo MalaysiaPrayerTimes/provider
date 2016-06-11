@@ -88,7 +88,7 @@ class JakimProvider extends BaseProvider
         }
     }
 
-    public function getByJakimCode($jakimCode)
+    public function getByJakimCode($jakimCode): JakimPrayerData
     {
         $url = self::getJakimUrl($jakimCode, $this->getYear(), $this->getMonth());
         $times = $this->getPrayerTimes($jakimCode, $this->getYear(), $this->getMonth());
@@ -131,7 +131,7 @@ class JakimProvider extends BaseProvider
                     }
                 }
 
-                $t = mktime($ch, $cm, 0, $this->month, $p + 1, $this->year);
+                $t = mktime($ch, $cm, 0, $this->getMonth(), $p + 1, $this->getYear());
                 $parsed[$p][] = $t;
 
                 if ($i === 6) {
@@ -146,6 +146,8 @@ class JakimProvider extends BaseProvider
 
         $jpd = new JakimPrayerData();
         return $jpd->setTimes($parsed)
+            ->setMonth($this->getMonth())
+            ->setYear($this->getYear())
             ->setJakimCode($jakimCode)
             ->setSource($url);
     }

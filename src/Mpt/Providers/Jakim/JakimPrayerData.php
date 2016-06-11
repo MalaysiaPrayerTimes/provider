@@ -7,6 +7,8 @@ use Mpt\Model\PrayerData;
 class JakimPrayerData implements PrayerData
 {
 
+    private $month;
+    private $year;
     private $code;
     private $times;
     private $place;
@@ -22,6 +24,28 @@ class JakimPrayerData implements PrayerData
         $this->lastModified = new \DateTime();
     }
 
+    public function getMonth()
+    {
+        return $this->month;
+    }
+
+    public function setMonth($month)
+    {
+        $this->month = $month;
+        return $this;
+    }
+    
+    public function getYear()
+    {
+        return $this->year;
+    }
+    
+    public function setYear($year)
+    {
+        $this->year = $year;
+        return $this;
+    }
+    
     public function getCode()
     {
         return $this->code;
