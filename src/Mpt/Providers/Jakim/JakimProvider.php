@@ -47,7 +47,13 @@ class JakimProvider extends BaseProvider
             throw new DataNotAvailableException();
         }
 
-        $code = $this->getCodeByDistrict($address->getLocality());
+        $locality = $address->getLocality();
+
+        if (is_null($locality)) {
+            throw new DataNotAvailableException();
+        }
+
+        $code = $this->getCodeByDistrict($locality());
         return $code->getCode();
     }
 
@@ -195,15 +201,17 @@ class JakimProvider extends BaseProvider
         $dlfh = fopen(self::DEFAULT_LOCATION_FILE, 'r');
         $elfh = fopen(self::EXTRA_LOCATION_FILE, 'r');
 
+        if (is_null($district)) {
+            throw new InvalidCodeException();
+        }
+
         if ($dlfh && $elfh) {
             $info = null;
 
             while (!feof($dlfh)) {
                 $buffer = fgetcsv($dlfh);
 
-                if (strtolower($buffer[1])
-                    == strtolower($district)
-                ) {
+                if (strtolower($buffer[1]) == strtolower($district)) {
                     $info = new CodeInfo();
                     $info->setCode($buffer[3])
                         ->setState($buffer[0])
@@ -223,9 +231,7 @@ class JakimProvider extends BaseProvider
             while (!feof($elfh)) {
                 $buffer = fgetcsv($elfh);
 
-                if (strtolower($buffer[0])
-                    == strtolower($district)
-                ) {
+                if (strtolower($buffer[0]) == strtolower($district)) {
                     $info = new CodeInfo();
                     $info->setCode($buffer[2])
                         ->setDistrict($buffer[0])
@@ -246,6 +252,10 @@ class JakimProvider extends BaseProvider
     private static function getCodeInfo($code)
     {
         $handle = fopen(self::DEFAULT_LOCATION_FILE, 'r');
+
+        if (is_null($code)) {
+            throw new InvalidCodeException();
+        }
 
         if ($handle) {
             $info = null;
