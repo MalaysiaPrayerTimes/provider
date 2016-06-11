@@ -10,4 +10,6 @@ interface PrayerData
     public function getTimes();
 
     public function getPlace();
+    
+    public function getProviderName();
 }

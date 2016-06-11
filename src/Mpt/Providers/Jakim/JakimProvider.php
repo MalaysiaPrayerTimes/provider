@@ -3,9 +3,11 @@ declare(strict_types = 1);
 
 namespace Mpt\Providers\Jakim;
 
+use Geocoder\ProviderAggregator;
 use Goutte\Client;
 use League\Geotools\Geotools;
 use Mpt\Exception\ConnectException;
+use Mpt\Exception\DataNotAvailableException;
 use Mpt\Exception\InvalidCodeException;
 use Mpt\Exception\InvalidDataException;
 use Mpt\Exception\SourceException;
@@ -20,9 +22,9 @@ class JakimProvider extends BaseProvider
 
     private $client;
 
-    public function __construct(Geotools $geotools, Client $goutte)
+    public function __construct(Geotools $geotools, ProviderAggregator $geocoder, Client $goutte)
     {
-        parent::__construct($geotools);
+        parent::__construct($geotools, $geocoder);
         $this->client = $goutte;
     }
 
@@ -36,13 +38,13 @@ class JakimProvider extends BaseProvider
         $result = $this->reverseGeocode($lat, $lng);
 
         if (!$this->isInCountry($result, 'MY')) {
-            return null;
+            throw new DataNotAvailableException();
         }
 
         $address = $result->getAddress();
 
         if (is_null($address)) {
-            return null;
+            throw new DataNotAvailableException();
         }
 
         $code = $this->getCodeByDistrict($address->getLocality());

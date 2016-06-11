@@ -6,6 +6,7 @@ namespace Mpt\Providers;
 use Geocoder\ProviderAggregator;
 use League\Geotools\Batch\BatchGeocoded;
 use League\Geotools\Cache\CacheInterface;
+use League\Geotools\Coordinate\Coordinate;
 use League\Geotools\Geotools;
 
 abstract class BaseProvider implements PrayerTimeProvider
@@ -16,21 +17,15 @@ abstract class BaseProvider implements PrayerTimeProvider
     private $geotools;
     private $geocoder;
 
-    public function __construct(Geotools $geotools)
+    public function __construct(Geotools $geotools, ProviderAggregator $geocoder)
     {
         $this->geotools = $geotools;
-        $this->geocoder = new ProviderAggregator();
+        $this->geocoder = $geocoder;
     }
 
     public function setGeotoolsCache(CacheInterface $cache)
     {
         $this->cache = $cache;
-        return $this;
-    }
-
-    public function registerGeocoderProviders(array $providers)
-    {
-        $this->geocoder->registerProviders($providers);
         return $this;
     }
 
@@ -43,9 +38,8 @@ abstract class BaseProvider implements PrayerTimeProvider
         }
 
         $results = $gc->reverse([
-            new \League\Geotools\Coordinate\Coordinate([$lat, $lng])
-        ])
-            ->parallel();
+            new Coordinate([$lat, $lng])
+        ])->parallel();
 
         return $results[0];
     }

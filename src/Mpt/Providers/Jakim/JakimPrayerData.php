@@ -13,6 +13,12 @@ class JakimPrayerData implements PrayerData
     private $origin;
     private $jakim;
     private $source;
+    private $provider;
+
+    public function __construct()
+    {
+        $this->provider = 'jakim';
+    }
 
     public function getCode()
     {
@@ -45,6 +51,11 @@ class JakimPrayerData implements PrayerData
     {
         $this->place = $place;
         return $this;
+    }
+    
+    public function getProviderName()
+    {
+        return $this->provider;
     }
 
     public function getJakimCode()
