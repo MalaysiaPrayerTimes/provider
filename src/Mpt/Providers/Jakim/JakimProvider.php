@@ -4,24 +4,25 @@ declare(strict_types = 1);
 namespace Mpt\Providers\Jakim;
 
 use Goutte\Client;
-use Mpt\DateTrait;
+use League\Geotools\Geotools;
 use Mpt\Exception\ConnectException;
 use Mpt\Exception\InvalidCodeException;
 use Mpt\Exception\InvalidDataException;
 use Mpt\Exception\SourceException;
-use Mpt\PrayerData;
-use Mpt\PrayerTimeProvider;
+use Mpt\Model\PrayerData;
+use Mpt\Providers\BaseProvider;
 use Symfony\Component\DomCrawler\Crawler;
 
-class JakimProvider implements PrayerTimeProvider
+class JakimProvider extends BaseProvider
 {
-
-    use DateTrait;
+    const DEFAULT_LOCATION_FILE = __DIR__ . '/Resources/default_locations.csv';
+    const EXTRA_LOCATION_FILE = __DIR__ . '/Resources/extra_locations.csv';
 
     private $client;
 
-    public function __construct(Client $goutte)
+    public function __construct(Geotools $geotools, Client $goutte)
     {
+        parent::__construct($geotools);
         $this->client = $goutte;
     }
 
@@ -30,10 +31,22 @@ class JakimProvider implements PrayerTimeProvider
         return 'jakim';
     }
 
-    public function getCodeByCoordinates(float $lat, float $lng, int $acc = 0): string
+    public function getCodeByCoordinates($lat, $lng, int $acc = 0): string
     {
-        // TODO: Implement getCodeByCoordinates() method.
-        return null;
+        $result = $this->reverseGeocode($lat, $lng);
+
+        if (!$this->isInCountry($result, 'MY')) {
+            return null;
+        }
+
+        $address = $result->getAddress();
+
+        if (is_null($address)) {
+            return null;
+        }
+
+        $code = $this->getCodeByDistrict($address->getLocality());
+        return $code->getCode();
     }
 
     public function getTimesByCode(string $code): PrayerData
@@ -173,19 +186,72 @@ class JakimProvider implements PrayerTimeProvider
         }
     }
 
+    private function getCodeByDistrict($district)
+    {
+        $dlfh = fopen(self::DEFAULT_LOCATION_FILE, 'r');
+        $elfh = fopen(self::EXTRA_LOCATION_FILE, 'r');
+
+        if ($dlfh && $elfh) {
+            $info = null;
+
+            while (!feof($dlfh)) {
+                $buffer = fgetcsv($dlfh);
+
+                if (strtolower($buffer[1])
+                    == strtolower($district)
+                ) {
+                    $info = new CodeInfo();
+                    $info->setCode($buffer[3])
+                        ->setState($buffer[0])
+                        ->setDistrict($buffer[1])
+                        ->setJakimCode($buffer[2]);
+
+                    break;
+                }
+            }
+
+            if ($info != null) {
+                fclose($dlfh);
+                fclose($elfh);
+                return $info;
+            }
+
+            while (!feof($elfh)) {
+                $buffer = fgetcsv($elfh);
+
+                if (strtolower($buffer[0])
+                    == strtolower($district)
+                ) {
+                    $info = new CodeInfo();
+                    $info->setCode($buffer[2])
+                        ->setDistrict($buffer[0])
+                        ->setOriginCode($buffer[1]);
+
+                    break;
+                }
+            }
+
+            fclose($dlfh);
+            fclose($elfh);
+            return $info;
+        } else {
+            throw new SourceException('Error getting JAKIM code.');
+        }
+    }
+
     private static function getCodeInfo($code)
     {
-        $handle = fopen(__DIR__ . '/Resources/default_locations.csv', 'r');
+        $handle = fopen(self::DEFAULT_LOCATION_FILE, 'r');
 
         if ($handle) {
             $info = null;
 
             while (!feof($handle)) {
                 $buffer = fgetcsv($handle);
-                if ($buffer[3] == $code) {
 
+                if ($buffer[3] == $code) {
                     $info = new CodeInfo();
-                    $info->setCode($code)
+                    $info->setCode($buffer[3])
                         ->setState($buffer[0])
                         ->setDistrict($buffer[1])
                         ->setJakimCode($buffer[2]);
@@ -203,17 +269,17 @@ class JakimProvider implements PrayerTimeProvider
 
     private static function getExtraCodeInfo($code)
     {
-        $handle = fopen(__DIR__ . '/Resources/extra_locations.csv', 'r');
+        $handle = fopen(self::EXTRA_LOCATION_FILE, 'r');
 
         if ($handle) {
             $info = null;
 
             while (!feof($handle)) {
                 $buffer = fgetcsv($handle);
-                if ($buffer[2] == $code) {
 
+                if ($buffer[2] == $code) {
                     $info = new CodeInfo();
-                    $info->setCode($code)
+                    $info->setCode($buffer[2])
                         ->setDistrict($buffer[0])
                         ->setOriginCode($buffer[1]);
 

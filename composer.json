@@ -3,7 +3,8 @@
     "type": "library",
     "require": {
         "php": ">=7.0.0",
-        "fabpot/goutte": "~3.1"
+        "fabpot/goutte": "~3.1",
+        "league/geotools": "~0.7"
     },
     "autoload": {
         "psr-4": {
