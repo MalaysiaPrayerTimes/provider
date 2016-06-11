@@ -133,7 +133,7 @@ class Provider
 
     public function getYear()
     {
-        if (!isset($year)) {
+        if (!isset($this->year) || is_null($this->year)) {
             $m = (int)date('m');
             $year = (int)date('Y');
 
@@ -147,7 +147,7 @@ class Provider
         return $this->year;
     }
 
-    public function setYear(int $year)
+    public function setYear($year)
     {
         $this->year = $year;
         return $this;
@@ -155,14 +155,14 @@ class Provider
 
     public function getMonth()
     {
-        if (!isset($this->month)) {
+        if (!isset($this->month) || is_null($this->month)) {
             $this->month = (int)date('m');
         }
 
         return $this->month;
     }
 
-    public function setMonth(int $month)
+    public function setMonth($month)
     {
         $this->month = $month;
         return $this;

@@ -9,7 +9,7 @@ trait DateTrait
 
     public function getYear()
     {
-        if (!isset($year)) {
+        if (!isset($this->year)) {
             $m = (int)date('m');
             $year = (int)date('Y');
 

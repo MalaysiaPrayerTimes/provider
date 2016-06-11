@@ -14,10 +14,12 @@ class JakimPrayerData implements PrayerData
     private $jakim;
     private $source;
     private $provider;
+    private $lastModified;
 
     public function __construct()
     {
         $this->provider = 'jakim';
+        $this->lastModified = new \DateTime();
     }
 
     public function getCode()
@@ -52,10 +54,20 @@ class JakimPrayerData implements PrayerData
         $this->place = $place;
         return $this;
     }
-    
+
     public function getProviderName()
     {
         return $this->provider;
+    }
+
+    public function getLastModified()
+    {
+        return $this->lastModified;
+    }
+
+    public function setLastModified(\DateTime $date)
+    {
+        $this->lastModified = $date;
     }
 
     public function getJakimCode()
