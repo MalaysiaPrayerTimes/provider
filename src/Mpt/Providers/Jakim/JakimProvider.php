@@ -26,7 +26,7 @@ class JakimProvider extends BaseProvider
         $this->client = $goutte;
     }
 
-    public function getProviderName(): string
+    public function getName(): string
     {
         return 'jakim';
     }

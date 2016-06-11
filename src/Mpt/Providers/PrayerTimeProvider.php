@@ -7,7 +7,7 @@ use Mpt\Model\PrayerData;
 interface PrayerTimeProvider
 {
 
-    public function getProviderName(): string;
+    public function getName(): string;
 
     public function getCodeByCoordinates($lat, $lng, int $acc = 0): string;
 
