@@ -2,7 +2,7 @@
 
 namespace Mpt\Providers\Jakim;
 
-use Mpt\PrayerData;
+use Mpt\Model\PrayerData;
 
 class JakimPrayerData implements PrayerData
 {

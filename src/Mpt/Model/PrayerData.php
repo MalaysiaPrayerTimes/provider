@@ -1,6 +1,6 @@
 <?php
 
-namespace Mpt;
+namespace Mpt\Model;
 
 interface PrayerData
 {

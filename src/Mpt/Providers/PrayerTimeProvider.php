@@ -1,13 +1,15 @@
 <?php
 
-namespace Mpt;
+namespace Mpt\Providers;
+
+use Mpt\Model\PrayerData;
 
 interface PrayerTimeProvider
 {
 
     public function getProviderName(): string;
 
-    public function getCodeByCoordinates(float $lat, float $lng, int $acc = 0): string;
+    public function getCodeByCoordinates($lat, $lng, int $acc = 0): string;
 
     public function getTimesByCode(String $code): PrayerData;
 
