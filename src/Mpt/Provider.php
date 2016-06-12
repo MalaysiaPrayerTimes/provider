@@ -86,7 +86,7 @@ class Provider
 
     public function registerPrayerTimeProvider(PrayerTimeProvider $provider)
     {
-        $this->providers[$provider->getName()] = $provider;
+        $this->providers[] = $provider;
         return $this;
     }
 
