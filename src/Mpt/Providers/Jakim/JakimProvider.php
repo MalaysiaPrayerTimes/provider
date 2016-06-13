@@ -53,7 +53,7 @@ class JakimProvider extends BaseProvider
             throw new DataNotAvailableException();
         }
 
-        $code = $this->getCodeByDistrict($locality());
+        $code = $this->getCodeByDistrict($locality);
         return $code->getCode();
     }
 
