@@ -52,7 +52,15 @@ class Provider
         throw new InvalidCodeException();
     }
 
+    /**
+     * @deprecated
+     */
     public function getTimesByCoordinate($lat, $lng): PrayerData
+    {
+        return $this->getTimesByCoordinates($lat, $lng);
+    }
+
+    public function getTimesByCoordinates($lat, $lng): PrayerData
     {
         $this->throwIfNoProviders();
 
