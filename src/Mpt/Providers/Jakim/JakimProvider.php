@@ -196,80 +196,48 @@ class JakimProvider extends BaseProvider
         }
     }
 
-    private function getCodeByDistrict($district)
+    private function getCodeByDistrict($district): CodeInfo
     {
-        $dlfh = fopen(self::DEFAULT_LOCATION_FILE, 'r');
-        $elfh = fopen(self::EXTRA_LOCATION_FILE, 'r');
-
         if (is_null($district)) {
             throw new InvalidCodeException();
         }
 
-        if ($dlfh && $elfh) {
-            $info = null;
+        $info = self::getCodeInfo(null, $district);
 
-            while (!feof($dlfh)) {
-                $buffer = fgetcsv($dlfh);
-
-                if (strtolower($buffer[1]) == strtolower($district)) {
-                    $info = new CodeInfo();
-                    $info->setCode($buffer[3])
-                        ->setState($buffer[0])
-                        ->setDistrict($buffer[1])
-                        ->setJakimCode($buffer[2]);
-
-                    break;
-                }
-            }
-
-            if ($info != null) {
-                fclose($dlfh);
-                fclose($elfh);
-                return $info;
-            }
-
-            while (!feof($elfh)) {
-                $buffer = fgetcsv($elfh);
-
-                if (strtolower($buffer[0]) == strtolower($district)) {
-                    $info = new CodeInfo();
-                    $info->setCode($buffer[2])
-                        ->setDistrict($buffer[0])
-                        ->setOriginCode($buffer[1]);
-
-                    break;
-                }
-            }
-
-            fclose($dlfh);
-            fclose($elfh);
+        if ($info != null) {
             return $info;
-        } else {
-            throw new SourceException('Error getting JAKIM code.');
         }
+
+        $info = self::getExtraCodeInfo(null, $district);
+
+        if ($info != null) {
+            return $info;
+        }
+
+        throw new InvalidCodeException();
     }
 
-    private static function getCodeInfo($code)
+    private static function getCodeInfo($code = null, $district = null)
     {
-        $handle = fopen(self::DEFAULT_LOCATION_FILE, 'r');
-
-        if (is_null($code)) {
+        if (empty($code) && empty($district)) {
             throw new InvalidCodeException();
         }
+
+        $handle = fopen(self::DEFAULT_LOCATION_FILE, 'r');
 
         if ($handle) {
             $info = null;
 
             while (!feof($handle)) {
                 $buffer = fgetcsv($handle);
+                $foundDistrict = false;
 
-                if ($buffer[3] == $code) {
-                    $info = new CodeInfo();
-                    $info->setCode($buffer[3])
-                        ->setState($buffer[0])
-                        ->setDistrict($buffer[1])
-                        ->setJakimCode($buffer[2]);
+                if (!empty($buffer[1]) && !empty($district)) {
+                    $foundDistrict = strtolower($buffer[1]) == strtolower($district);
+                }
 
+                if ($buffer[3] == $code || $foundDistrict) {
+                    $info = self::createDefaultCodeInfo($buffer[0], $buffer[1], $buffer[2], $buffer[3]);
                     break;
                 }
             }
@@ -290,13 +258,14 @@ class JakimProvider extends BaseProvider
 
             while (!feof($handle)) {
                 $buffer = fgetcsv($handle);
+                $foundDistrict = false;
 
-                if ($buffer[2] == $code) {
-                    $info = new CodeInfo();
-                    $info->setCode($buffer[2])
-                        ->setDistrict($buffer[0])
-                        ->setOriginCode($buffer[1]);
+                if (!empty($buffer[0]) && !empty($district)) {
+                    $foundDistrict = strtolower($buffer[0]) == strtolower($district);
+                }
 
+                if ($buffer[2] == $code || $foundDistrict) {
+                    $info = self::createExtraCodeInfo($buffer[0], $buffer[1], $buffer[2], $buffer[3]);
                     break;
                 }
             }
@@ -306,6 +275,24 @@ class JakimProvider extends BaseProvider
         } else {
             throw new SourceException('Error getting extended JAKIM code.');
         }
+    }
+
+    private static function createDefaultCodeInfo($state, $district, $jakim, $code): CodeInfo
+    {
+        $info = new CodeInfo();
+        return $info->setCode($code)
+            ->setState($state)
+            ->setDistrict($district)
+            ->setJakimCode($jakim);
+    }
+
+    private static function createExtraCodeInfo($district, $origin, $code, $duplicateOf): CodeInfo
+    {
+        $info = new CodeInfo();
+        return $info->setCode($code)
+            ->setDistrict($district)
+            ->setOriginCode($origin)
+            ->setDuplicateOf($duplicateOf);
     }
 
     private static function getJakimUrl($jakimCode, $year, $month)
