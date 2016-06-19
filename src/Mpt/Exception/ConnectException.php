@@ -2,6 +2,6 @@
 
 namespace Mpt\Exception;
 
-class ConnectException extends SourceException
+class ConnectException extends ProviderException
 {
 }

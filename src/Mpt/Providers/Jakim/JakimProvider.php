@@ -10,7 +10,7 @@ use Mpt\Exception\ConnectException;
 use Mpt\Exception\DataNotAvailableException;
 use Mpt\Exception\InvalidCodeException;
 use Mpt\Exception\InvalidDataException;
-use Mpt\Exception\SourceException;
+use Mpt\Exception\ProviderException;
 use Mpt\Model\PrayerData;
 use Mpt\Providers\BaseProvider;
 use Symfony\Component\DomCrawler\Crawler;
@@ -247,7 +247,7 @@ class JakimProvider extends BaseProvider
             fclose($handle);
             return $info;
         } else {
-            throw new SourceException('Error getting JAKIM code.');
+            throw new ProviderException('Error getting JAKIM code.');
         }
     }
 
@@ -284,7 +284,7 @@ class JakimProvider extends BaseProvider
                 return $info;
             }
         } else {
-            throw new SourceException('Error getting extended JAKIM code.');
+            throw new ProviderException('Error getting extended JAKIM code.');
         }
     }
 

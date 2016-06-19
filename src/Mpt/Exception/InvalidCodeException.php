@@ -2,6 +2,6 @@
 
 namespace Mpt\Exception;
 
-class InvalidCodeException extends SourceException
+class InvalidCodeException extends ProviderException
 {
 }
