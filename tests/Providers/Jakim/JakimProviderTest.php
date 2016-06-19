@@ -137,6 +137,27 @@ class JakimProviderTest extends TestCase
         $jp->getTimesByCode('sgp-1');
     }
 
+    public function testDuplicateCode()
+    {
+        $geotools = $this->getMockBuilder(Geotools::class)
+            ->getMock();
+
+        $geocoder = $this->getMockBuilder(ProviderAggregator::class)
+            ->getMock();
+
+        $guzzle = $this->getGuzzle([
+            new GuzzleResponse(200, [], file_get_contents(__DIR__ . '/Resources/kdh01-2016-06.html'))
+        ]);
+
+        $goutte = new Client();
+        $goutte->setClient($guzzle);
+
+        $jp = new JakimProvider($geotools, $geocoder, $goutte);
+        $data = $jp->getTimesByCode('ext-516');
+
+        $this->assertEquals('ext-515', $data->getCode());
+    }
+
     protected function getGuzzle(array $responses = [])
     {
         if (empty($responses)) {

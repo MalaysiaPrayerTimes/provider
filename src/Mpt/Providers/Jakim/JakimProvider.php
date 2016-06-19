@@ -63,6 +63,7 @@ class JakimProvider extends BaseProvider
         $district = null;
         $origin = null;
         $info = self::getCodeInfo($code);
+        $finalCode = $code;
 
         if ($info != null) {
             $jakimCode = $info->getJakimCode();
@@ -73,7 +74,8 @@ class JakimProvider extends BaseProvider
 
             if ($ext != null) {
                 $district = $ext->getDistrict();
-                $origin = $ext->getCode();
+                $origin = $ext->getOriginCode();
+                $finalCode = $ext->getCode();
 
                 $info = self::getCodeInfo($ext->getOriginCode());
 
@@ -85,7 +87,7 @@ class JakimProvider extends BaseProvider
 
         if ($jakimCode != null) {
             return $this->getByJakimCode($jakimCode)
-                ->setCode($code)
+                ->setCode($finalCode)
                 ->setPlace($district)
                 ->setOrigin($origin);
 
@@ -249,8 +251,12 @@ class JakimProvider extends BaseProvider
         }
     }
 
-    private static function getExtraCodeInfo($code)
+    private static function getExtraCodeInfo($code = null, $district = null)
     {
+        if (empty($code) && empty($district)) {
+            throw new InvalidCodeException();
+        }
+
         $handle = fopen(self::EXTRA_LOCATION_FILE, 'r');
 
         if ($handle) {
@@ -271,7 +277,12 @@ class JakimProvider extends BaseProvider
             }
 
             fclose($handle);
-            return $info;
+
+            if ($info != null && $info->isDuplicate()) {
+                return self::getExtraCodeInfo($info->getDuplicateOf());
+            } else {
+                return $info;
+            }
         } else {
             throw new SourceException('Error getting extended JAKIM code.');
         }
@@ -312,6 +323,7 @@ class CodeInfo
     private $jakim;
     private $code;
     private $origin;
+    private $duplicateOf;
 
     public function getState()
     {
@@ -365,6 +377,22 @@ class CodeInfo
     public function setOriginCode($origin)
     {
         $this->origin = $origin;
+        return $this;
+    }
+
+    public function isDuplicate()
+    {
+        return !empty($this->getDuplicateOf());
+    }
+
+    public function getDuplicateOf()
+    {
+        return $this->duplicateOf;
+    }
+
+    public function setDuplicateOf($duplicateOf)
+    {
+        $this->duplicateOf = $duplicateOf;
         return $this;
     }
 }
