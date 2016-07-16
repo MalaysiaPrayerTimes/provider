@@ -19,7 +19,6 @@ use PHPUnit\Framework\TestCase;
 
 class JakimProviderTest extends TestCase
 {
-
     protected $history;
     
     /** @var MockHandler */

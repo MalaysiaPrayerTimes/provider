@@ -6,7 +6,6 @@ use Mpt\Model\PrayerData;
 
 class JakimPrayerData implements PrayerData
 {
-
     private $month;
     private $year;
     private $code;

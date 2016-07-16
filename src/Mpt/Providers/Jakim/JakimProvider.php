@@ -1,5 +1,5 @@
 <?php
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Mpt\Providers\Jakim;
 
@@ -90,7 +90,6 @@ class JakimProvider extends BaseProvider
                 ->setCode($finalCode)
                 ->setPlace($district)
                 ->setOrigin($origin);
-
         } else {
             throw new InvalidCodeException();
         }

@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 
 class ProviderTest extends TestCase
 {
-
     public function testNoRegisteredProviders()
     {
         $this->expectException(RuntimeException::class);
