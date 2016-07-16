@@ -134,7 +134,8 @@ class Provider
         $this->cache->cacheLocation($location);
     }
     
-    public function setCache($cache) {
+    public function setCache($cache)
+    {
         $this->cache = $cache;
         return $this;
     }

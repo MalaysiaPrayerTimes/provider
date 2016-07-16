@@ -4,7 +4,6 @@ namespace Mpt\Model;
 
 class LocationCache
 {
-
     public $lat;
     public $lng;
     public $code;

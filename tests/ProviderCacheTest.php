@@ -9,7 +9,6 @@ use PHPUnit\Framework\TestCase;
 
 class ProviderCacheTest extends TestCase
 {
-
     public function testPrayerCacheNotAvailable()
     {
         $data = $this->getMockBuilder(PrayerData::class)
