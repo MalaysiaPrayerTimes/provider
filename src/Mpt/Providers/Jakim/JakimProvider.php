@@ -201,7 +201,7 @@ class JakimProvider extends BaseProvider
     private function getCodeByDistrict($district): CodeInfo
     {
         if (is_null($district)) {
-            throw new InvalidCodeException();
+            throw new InvalidCodeException('Empty district name was given.');
         }
 
         $info = self::getCodeInfo(null, $district);
@@ -216,13 +216,13 @@ class JakimProvider extends BaseProvider
             return $info;
         }
 
-        throw new InvalidCodeException();
+        throw new InvalidCodeException("No code found for district: $district.");
     }
 
     private static function getCodeInfo($code = null, $district = null)
     {
         if (empty($code) && empty($district)) {
-            throw new InvalidCodeException();
+            throw new InvalidCodeException('Empty code and district name was given.');
         }
 
         $handle = fopen(self::DEFAULT_LOCATION_FILE, 'r');
@@ -254,7 +254,7 @@ class JakimProvider extends BaseProvider
     private static function getExtraCodeInfo($code = null, $district = null)
     {
         if (empty($code) && empty($district)) {
-            throw new InvalidCodeException();
+            throw new InvalidCodeException('Empty code and district name was given.');
         }
 
         $handle = fopen(self::EXTRA_LOCATION_FILE, 'r');
