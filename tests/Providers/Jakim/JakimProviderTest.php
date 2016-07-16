@@ -115,7 +115,9 @@ class JakimProviderTest extends TestCase
         $goutte->setClient($guzzle);
 
         $jp = new JakimProvider($geotools, $geocoder, $goutte);
-        $data = $jp->getTimesByCode('ext-153');
+        $data = $jp->setMonth(6)
+            ->setYear(2016)
+            ->getTimesByCode('ext-153');
         
         $this->assertEquals(1464730740, $data->getTimes()[0][0]);
     }
