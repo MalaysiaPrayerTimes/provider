@@ -12,6 +12,8 @@ interface PrayerTimeProvider
 
     public function getTimesByCode(String $code): PrayerData;
 
+    public function getSupportedCodes(): array;
+
     public function setYear(int $year): PrayerTimeProvider;
 
     public function setMonth(int $month): PrayerTimeProvider;

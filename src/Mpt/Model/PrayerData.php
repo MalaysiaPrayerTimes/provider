@@ -4,10 +4,16 @@ namespace Mpt\Model;
 
 interface PrayerData
 {
+    /**
+     * @return int
+     */
     public function getMonth();
-    
+
+    /**
+     * @return int
+     */
     public function getYear();
-    
+
     /**
      * @return string
      */
