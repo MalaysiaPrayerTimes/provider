@@ -198,7 +198,7 @@ class JakimProvider extends BaseProvider
             while (!feof($handle2)) {
                 $buffer = fgetcsv($handle2);
                 $code2 = self::createExtraCodeInfo($buffer[0], $buffer[1], $buffer[2], $buffer[3]);
-                $code2->setState($code2->getOriginCode());
+                $code2->setState($states[$code2->getOriginCode()]);
                 $codes[] = $code2;
             }
 
