@@ -14,6 +14,7 @@ use League\Geotools\Batch\BatchInterface;
 use League\Geotools\Geotools;
 use Mpt\Exception\DataNotAvailableException;
 use Mpt\Exception\InvalidCodeException;
+use Mpt\Model\PrayerCode;
 use Mpt\Providers\Jakim\JakimProvider;
 use PHPUnit\Framework\TestCase;
 
@@ -123,6 +124,20 @@ class JakimProviderTest extends TestCase
         $data = $jp->getTimesByCode('ext-516');
 
         $this->assertEquals('ext-515', $data->getCode());
+    }
+
+    public function testSupportedCodes()
+    {
+        $jp = $this->getJakimProvider();
+
+        /** @var PrayerCode[] $codes */
+        $codes = $jp->getSupportedCodes();
+
+        foreach ($codes as $code) {
+            $this->assertNotEmpty($code->getCode(), 'Code is empty: ' . print_r($code, true));
+            $this->assertNotEmpty($code->getCity(), 'City is empty: ' . print_r($code, true));
+            $this->assertNotEmpty($code->getState(), 'State is empty: ' . print_r($code, true));
+        }
     }
 
     protected function getJakimProvider($geotools = null, $geocoder = null, $goutte = null)

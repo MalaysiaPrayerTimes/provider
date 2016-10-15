@@ -2,9 +2,9 @@
 
 namespace Mpt\Providers\Jakim;
 
-use Mpt\Model\PrayerData;
+use Mpt\Model\AbstractPrayerData;
 
-class JakimPrayerData implements PrayerData
+class JakimPrayerData extends AbstractPrayerData
 {
     private $month;
     private $year;
@@ -33,23 +33,31 @@ class JakimPrayerData implements PrayerData
         $this->month = $month;
         return $this;
     }
-    
+
     public function getYear()
     {
         return $this->year;
     }
-    
+
+    /**
+     * @param $year
+     * @return JakimPrayerData
+     */
     public function setYear($year)
     {
         $this->year = $year;
         return $this;
     }
-    
+
     public function getCode()
     {
         return $this->code;
     }
 
+    /**
+     * @param $code
+     * @return JakimPrayerData
+     */
     public function setCode($code)
     {
         $this->code = $code;
@@ -61,6 +69,10 @@ class JakimPrayerData implements PrayerData
         return $this->times;
     }
 
+    /**
+     * @param $times
+     * @return JakimPrayerData
+     */
     public function setTimes($times)
     {
         $this->times = $times;
@@ -72,6 +84,10 @@ class JakimPrayerData implements PrayerData
         return $this->place;
     }
 
+    /**
+     * @param $place
+     * @return JakimPrayerData
+     */
     public function setPlace($place)
     {
         $this->place = $place;
@@ -88,9 +104,14 @@ class JakimPrayerData implements PrayerData
         return $this->lastModified;
     }
 
+    /**
+     * @param \DateTime $date
+     * @return JakimPrayerData
+     */
     public function setLastModified(\DateTime $date)
     {
         $this->lastModified = $date;
+        return $this;
     }
 
     public function getJakimCode()
@@ -98,6 +119,10 @@ class JakimPrayerData implements PrayerData
         return $this->jakim;
     }
 
+    /**
+     * @param $code
+     * @return JakimPrayerData
+     */
     public function setJakimCode($code)
     {
         $this->jakim = $code;
@@ -109,6 +134,10 @@ class JakimPrayerData implements PrayerData
         return $this->origin;
     }
 
+    /**
+     * @param $origin
+     * @return JakimPrayerData
+     */
     public function setOrigin($origin)
     {
         $this->origin = $origin;
@@ -120,6 +149,10 @@ class JakimPrayerData implements PrayerData
         return $this->source;
     }
 
+    /**
+     * @param $source
+     * @return JakimPrayerData
+     */
     public function setSource($source)
     {
         $this->source = $source;
