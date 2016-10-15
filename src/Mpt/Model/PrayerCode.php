@@ -7,25 +7,25 @@ interface PrayerCode
     /**
      * @return string
      */
-    function getCode();
+    public function getCode();
 
     /**
      * return string
      */
-    function getCity();
+    public function getCity();
 
     /**
      * return string
      */
-    function getState();
+    public function getState();
 
     /**
      * return string
      */
-    function getCountry();
+    public function getCountry();
 
     /**
      * return string
      */
-    function getProviderName();
+    public function getProviderName();
 }
