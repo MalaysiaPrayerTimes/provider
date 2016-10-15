@@ -14,28 +14,23 @@ use League\Geotools\Batch\BatchInterface;
 use League\Geotools\Geotools;
 use Mpt\Exception\DataNotAvailableException;
 use Mpt\Exception\InvalidCodeException;
+use Mpt\Model\PrayerCode;
 use Mpt\Providers\Jakim\JakimProvider;
 use PHPUnit\Framework\TestCase;
 
 class JakimProviderTest extends TestCase
 {
     protected $history;
-    
+
     /** @var MockHandler */
     protected $mock;
-    
+
     public function testInCountryCoordinates()
     {
         $batch = $this->getMockBuilder(BatchInterface::class)
             ->getMock();
 
         $geotools = $this->getMockBuilder(Geotools::class)
-            ->getMock();
-
-        $geocoder = $this->getMockBuilder(ProviderAggregator::class)
-            ->getMock();
-
-        $goutte = $this->getMockBuilder(Client::class)
             ->getMock();
 
         $bgr = $this->getMockBuilder(BatchGeocoded::class)
@@ -55,7 +50,7 @@ class JakimProviderTest extends TestCase
             ->willReturn(new Address(null, null, null, null, null, 'Bagan Serai', null, null,
                 new Country('Malaysia', 'MY')));
 
-        $jp = new JakimProvider($geotools, $geocoder, $goutte);
+        $jp = $this->getJakimProvider($geotools);
 
         $result = $jp->getCodeByCoordinates(5.00983, 100.647);
         $this->assertEquals('prk-1', $result);
@@ -67,12 +62,6 @@ class JakimProviderTest extends TestCase
             ->getMock();
 
         $geotools = $this->getMockBuilder(Geotools::class)
-            ->getMock();
-
-        $geocoder = $this->getMockBuilder(ProviderAggregator::class)
-            ->getMock();
-
-        $goutte = $this->getMockBuilder(Client::class)
             ->getMock();
 
         $bgr = $this->getMockBuilder(BatchGeocoded::class)
@@ -92,7 +81,7 @@ class JakimProviderTest extends TestCase
             ->willReturn(new Address(null, null, null, null, null, 'Bagan Serai', null, null,
                 new Country('Singapore', 'SG')));
 
-        $jp = new JakimProvider($geotools, $geocoder, $goutte);
+        $jp = $this->getJakimProvider($geotools);
 
         $this->expectException(DataNotAvailableException::class);
         $jp->getCodeByCoordinates(1.3147268, 103.8116508);
@@ -100,52 +89,30 @@ class JakimProviderTest extends TestCase
 
     public function testValidCodes()
     {
-        $geotools = $this->getMockBuilder(Geotools::class)
-            ->getMock();
-
-        $geocoder = $this->getMockBuilder(ProviderAggregator::class)
-            ->getMock();
-
         $guzzle = $this->getGuzzle([
             new GuzzleResponse(200, [], file_get_contents(__DIR__ . '/Resources/kdh01-2016-06.html'))
         ]);
-        
+
         $goutte = new Client();
         $goutte->setClient($guzzle);
 
-        $jp = new JakimProvider($geotools, $geocoder, $goutte);
+        $jp = $this->getJakimProvider(null, null, $goutte);
         $data = $jp->setMonth(6)
             ->setYear(2016)
             ->getTimesByCode('ext-153');
-        
+
         $this->assertEquals(1464730740, $data->getTimes()[0][0]);
     }
 
     public function testInvalidCodes()
     {
-        $geotools = $this->getMockBuilder(Geotools::class)
-            ->getMock();
-
-        $geocoder = $this->getMockBuilder(ProviderAggregator::class)
-            ->getMock();
-
-        $goutte = $this->getMockBuilder(Client::class)
-            ->getMock();
-
-        $jp = new JakimProvider($geotools, $geocoder, $goutte);
-        
+        $jp = $this->getJakimProvider();
         $this->expectException(InvalidCodeException::class);
         $jp->getTimesByCode('sgp-1');
     }
 
     public function testDuplicateCode()
     {
-        $geotools = $this->getMockBuilder(Geotools::class)
-            ->getMock();
-
-        $geocoder = $this->getMockBuilder(ProviderAggregator::class)
-            ->getMock();
-
         $guzzle = $this->getGuzzle([
             new GuzzleResponse(200, [], file_get_contents(__DIR__ . '/Resources/kdh01-2016-06.html'))
         ]);
@@ -153,10 +120,44 @@ class JakimProviderTest extends TestCase
         $goutte = new Client();
         $goutte->setClient($guzzle);
 
-        $jp = new JakimProvider($geotools, $geocoder, $goutte);
+        $jp = $this->getJakimProvider(null, null, $goutte);
         $data = $jp->getTimesByCode('ext-516');
 
         $this->assertEquals('ext-515', $data->getCode());
+    }
+
+    public function testSupportedCodes()
+    {
+        $jp = $this->getJakimProvider();
+
+        /** @var PrayerCode[] $codes */
+        $codes = $jp->getSupportedCodes();
+
+        foreach ($codes as $code) {
+            $this->assertNotEmpty($code->getCode(), 'Code is empty: ' . print_r($code, true));
+            $this->assertNotEmpty($code->getCity(), 'City is empty: ' . print_r($code, true));
+            $this->assertNotEmpty($code->getState(), 'State is empty: ' . print_r($code, true));
+        }
+    }
+
+    protected function getJakimProvider($geotools = null, $geocoder = null, $goutte = null)
+    {
+        if (is_null($geotools)) {
+            $geotools = $this->getMockBuilder(Geotools::class)
+                ->getMock();
+        }
+
+        if (is_null($geocoder)) {
+            $geocoder = $this->getMockBuilder(ProviderAggregator::class)
+                ->getMock();
+        }
+
+        if (is_null($goutte)) {
+            $goutte = $this->getMockBuilder(Client::class)
+                ->getMock();
+        }
+
+        return new JakimProvider($geotools, $geocoder, $goutte);
     }
 
     protected function getGuzzle(array $responses = [])
@@ -164,7 +165,7 @@ class JakimProviderTest extends TestCase
         if (empty($responses)) {
             $responses = [new GuzzleResponse(200, [], '<html><body><p>Hi</p></body></html>')];
         }
-        
+
         $this->mock = new MockHandler($responses);
         $handlerStack = HandlerStack::create($this->mock);
         $this->history = [];

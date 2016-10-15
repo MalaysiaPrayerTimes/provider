@@ -52,4 +52,9 @@ abstract class BaseProvider implements PrayerTimeProvider
         }
         return $country == $address->getCountryCode();
     }
+
+    public function getSupportedCodes(): array
+    {
+        return [];
+    }
 }

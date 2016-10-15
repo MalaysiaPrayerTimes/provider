@@ -67,13 +67,13 @@ class JakimProvider extends BaseProvider
 
         if ($info != null) {
             $jakimCode = $info->getJakimCode();
-            $district = $info->getDistrict();
+            $district = $info->getCity();
             $origin = $info->getCode();
         } else {
             $ext = self::getExtraCodeInfo($code);
 
             if ($ext != null) {
-                $district = $ext->getDistrict();
+                $district = $ext->getCity();
                 $origin = $ext->getOriginCode();
                 $finalCode = $ext->getCode();
 
@@ -119,8 +119,8 @@ class JakimProvider extends BaseProvider
                 }
 
                 $c = explode($s, $time);
-                $ch = (int)$c[0];
-                $cm = (int)$c[1];
+                $ch = (int) $c[0];
+                $cm = (int) $c[1];
 
                 if ($i > 2) {
                     if ($i === 3) {
@@ -157,6 +157,43 @@ class JakimProvider extends BaseProvider
             ->setYear($this->getYear())
             ->setJakimCode($jakimCode)
             ->setSource($url);
+    }
+
+    public function getSupportedCodes(): array
+    {
+        $codes = [];
+        $states = [];
+
+        $handle1 = fopen(self::DEFAULT_LOCATION_FILE, 'r');
+        $handle2 = fopen(self::EXTRA_LOCATION_FILE, 'r');
+
+        if ($handle1) {
+            while (!feof($handle1)) {
+                $buffer = fgetcsv($handle1);
+                $code = self::createDefaultCodeInfo($buffer[0], $buffer[1], $buffer[2], $buffer[3]);
+                $codes[] = $code;
+                $states[$code->getCode()] = $code->getState();
+            }
+
+            fclose($handle1);
+        } else {
+            throw new ProviderException('Error getting JAKIM code.');
+        }
+
+        if ($handle2) {
+            while (!feof($handle2)) {
+                $buffer = fgetcsv($handle2);
+                $code2 = self::createExtraCodeInfo($buffer[0], $buffer[1], $buffer[2], $buffer[3]);
+                $code2->setState($code2->getOriginCode());
+                $codes[] = $code2;
+            }
+
+            fclose($handle2);
+        } else {
+            throw new ProviderException('Error getting extended JAKIM code.');
+        }
+
+        return $codes;
     }
 
     private function getPrayerTimes($jakimCode, $year, $month)
@@ -197,7 +234,7 @@ class JakimProvider extends BaseProvider
         }
     }
 
-    private function getCodeByDistrict($district): CodeInfo
+    private function getCodeByDistrict($district): JakimPrayerCode
     {
         if (is_null($district)) {
             throw new InvalidCodeException('Empty district name was given.');
@@ -287,20 +324,20 @@ class JakimProvider extends BaseProvider
         }
     }
 
-    private static function createDefaultCodeInfo($state, $district, $jakim, $code): CodeInfo
+    private static function createDefaultCodeInfo($state, $district, $jakim, $code): JakimPrayerCode
     {
-        $info = new CodeInfo();
+        $info = new JakimPrayerCode();
         return $info->setCode($code)
             ->setState($state)
-            ->setDistrict($district)
+            ->setCity($district)
             ->setJakimCode($jakim);
     }
 
-    private static function createExtraCodeInfo($district, $origin, $code, $duplicateOf): CodeInfo
+    private static function createExtraCodeInfo($district, $origin, $code, $duplicateOf): JakimPrayerCode
     {
-        $info = new CodeInfo();
+        $info = new JakimPrayerCode();
         return $info->setCode($code)
-            ->setDistrict($district)
+            ->setCity($district)
             ->setOriginCode($origin)
             ->setDuplicateOf($duplicateOf);
     }
@@ -312,86 +349,5 @@ class JakimProvider extends BaseProvider
         . "&year=$year"
         . "&bulan=$month"
         . "&jenis=year&lang=my&url=http://mpt.i906.my";
-    }
-}
-
-class CodeInfo
-{
-    private $state;
-    private $district;
-    private $jakim;
-    private $code;
-    private $origin;
-    private $duplicateOf;
-
-    public function getState()
-    {
-        return $this->state;
-    }
-
-    public function setState($state)
-    {
-        $this->state = $state;
-        return $this;
-    }
-
-    public function getDistrict()
-    {
-        return $this->district;
-    }
-
-    public function setDistrict($district)
-    {
-        $this->district = $district;
-        return $this;
-    }
-
-    public function getJakimCode()
-    {
-        return $this->jakim;
-    }
-
-    public function setJakimCode($jakim)
-    {
-        $this->jakim = $jakim;
-        return $this;
-    }
-
-    public function getCode()
-    {
-        return $this->code;
-    }
-
-    public function setCode($code)
-    {
-        $this->code = $code;
-        return $this;
-    }
-
-    public function getOriginCode()
-    {
-        return $this->origin;
-    }
-
-    public function setOriginCode($origin)
-    {
-        $this->origin = $origin;
-        return $this;
-    }
-
-    public function isDuplicate()
-    {
-        return !empty($this->getDuplicateOf());
-    }
-
-    public function getDuplicateOf()
-    {
-        return $this->duplicateOf;
-    }
-
-    public function setDuplicateOf($duplicateOf)
-    {
-        $this->duplicateOf = $duplicateOf;
-        return $this;
     }
 }
