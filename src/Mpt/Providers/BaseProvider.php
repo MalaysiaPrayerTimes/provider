@@ -29,7 +29,7 @@ abstract class BaseProvider implements PrayerTimeProvider
         return $this;
     }
 
-    protected function reverseGeocode($lat, $lng): BatchGeocoded
+    protected function reverseGeocode($lat, $lng): array
     {
         $gc = $this->geotools->batch($this->geocoder);
 
@@ -41,7 +41,7 @@ abstract class BaseProvider implements PrayerTimeProvider
             new Coordinate([$lat, $lng])
         ])->parallel();
 
-        return $results[0];
+        return $results;
     }
 
     protected function isInCountry(BatchGeocoded $result, string $country): bool

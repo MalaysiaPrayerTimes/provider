@@ -5,6 +5,7 @@ namespace Mpt\Providers\Jakim;
 
 use Geocoder\ProviderAggregator;
 use Goutte\Client;
+use League\Geotools\Batch\BatchGeocoded;
 use League\Geotools\Geotools;
 use Mpt\Exception\ConnectException;
 use Mpt\Exception\DataNotAvailableException;
@@ -35,26 +36,39 @@ class JakimProvider extends BaseProvider
 
     public function getCodeByCoordinates($lat, $lng, int $acc = 0): string
     {
-        $result = $this->reverseGeocode($lat, $lng);
+        /** @var BatchGeocoded[] $results */
+        $results = $this->reverseGeocode($lat, $lng);
+        $code = null;
 
-        if (!$this->isInCountry($result, 'MY')) {
-            throw new DataNotAvailableException();
+        if (empty($results)) {
+            throw new DataNotAvailableException('No results returned from geocoder.');
         }
 
-        $address = $result->getAddress();
+        foreach ($results as $result) {
+            if (!$this->isInCountry($result, 'MY')) {
+                continue;
+            }
 
-        if (is_null($address)) {
-            throw new DataNotAvailableException();
+            $address = $result->getAddress();
+
+            if (is_null($address)) {
+                continue;
+            }
+
+            $locality = $address->getLocality();
+
+            if (is_null($locality)) {
+                continue;
+            }
+
+            try {
+                $code = $this->getCodeByDistrict($locality);
+                return $code->getCode();
+            } catch (InvalidCodeException $e) {
+            }
         }
 
-        $locality = $address->getLocality();
-
-        if (is_null($locality)) {
-            throw new DataNotAvailableException();
-        }
-
-        $code = $this->getCodeByDistrict($locality);
-        return $code->getCode();
+        throw new DataNotAvailableException('No location found.');
     }
 
     public function getTimesByCode(string $code): PrayerData
