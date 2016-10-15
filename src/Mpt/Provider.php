@@ -85,6 +85,19 @@ class Provider
         throw new DataNotAvailableException();
     }
 
+    public function getSupportedCodes(): array
+    {
+        $this->throwIfNoProviders();
+
+        $codes = [];
+
+        foreach ($this->providers as $provider) {
+            $codes[$provider->getName()] = $provider->getSupportedCodes();
+        }
+
+        return $codes;
+    }
+
     private function throwIfNoProviders()
     {
         if (empty($this->providers)) {

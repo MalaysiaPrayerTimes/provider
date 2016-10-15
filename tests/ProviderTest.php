@@ -239,4 +239,53 @@ class ProviderTest extends TestCase
         $this->expectException(DataNotAvailableException::class);
         $provider->getTimesByCoordinate(4.5240321, 114.1578469);
     }
+
+    public function testGetSupportedCodes()
+    {
+        $myCodes = [
+            'c1',
+            'c2',
+        ];
+
+        $sgCodes = [
+            's1',
+            's2',
+        ];
+
+        $myProvider = $this->getMockBuilder(PrayerTimeProvider::class)
+            ->setMockClassName('MyProvider')
+            ->getMock();
+
+        $sgProvider = $this->getMockBuilder(PrayerTimeProvider::class)
+            ->setMockClassName('SgProvider')
+            ->getMock();
+
+        $myProvider->expects($this->once())
+            ->method('getName')
+            ->willReturn('my');
+
+        $sgProvider->expects($this->once())
+            ->method('getName')
+            ->willReturn('sg');
+
+        $myProvider->expects($this->once())
+            ->method('getSupportedCodes')
+            ->willReturn($myCodes);
+
+        $sgProvider->expects($this->once())
+            ->method('getSupportedCodes')
+            ->willReturn($sgCodes);
+
+        $provider = new Provider();
+        $provider->registerPrayerTimeProvider($myProvider);
+        $provider->registerPrayerTimeProvider($sgProvider);
+
+        $codes = $provider->getSupportedCodes();
+
+        $this->assertArrayHasKey('my', $codes);
+        $this->assertArrayHasKey('sg', $codes);
+
+        $this->assertEquals($myCodes, $codes['my']);
+        $this->assertEquals($sgCodes, $codes['sg']);
+    }
 }
