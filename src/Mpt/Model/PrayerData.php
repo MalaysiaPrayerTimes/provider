@@ -38,4 +38,9 @@ interface PrayerData
      * @return \DateTime
      */
     public function getLastModified();
+
+    /**
+     * @return array
+     */
+    public function getExtraAttributes();
 }
