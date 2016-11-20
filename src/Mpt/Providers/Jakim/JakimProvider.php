@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Mpt\Providers\Jakim;
 
+use Geocoder\Model\AdminLevel;
 use Geocoder\ProviderAggregator;
 use Goutte\Client;
 use League\Geotools\Batch\BatchGeocoded;
@@ -65,6 +66,17 @@ class JakimProvider extends BaseProvider
                 $code = $this->getCodeByDistrict($locality);
                 return $code->getCode();
             } catch (InvalidCodeException $e) {
+            }
+
+            /** @var AdminLevel[] $levels */
+            $levels = $address->getAdminLevels();
+
+            foreach ($levels as $level) {
+                try {
+                    $code = $this->getCodeByDistrict($level->getName());
+                    return $code->getCode();
+                } catch (InvalidCodeException $e) {
+                }
             }
         }
 
@@ -329,6 +341,12 @@ class JakimProvider extends BaseProvider
             fclose($handle);
 
             if ($info != null && $info->isDuplicate()) {
+                $dupCodeInfo = self::getCodeInfo($info->getDuplicateOf());
+
+                if ($dupCodeInfo != null) {
+                    return $dupCodeInfo;
+                }
+
                 return self::getExtraCodeInfo($info->getDuplicateOf());
             } else {
                 return $info;

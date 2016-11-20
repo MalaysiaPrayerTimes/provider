@@ -158,4 +158,12 @@ class JakimPrayerData extends AbstractPrayerData
         $this->source = $source;
         return $this;
     }
+
+    public function getExtraAttributes()
+    {
+        return [
+            'jakim_code' => $this->getJakimCode(),
+            'jakim_source' => $this->getSource(),
+        ];
+    }
 }
