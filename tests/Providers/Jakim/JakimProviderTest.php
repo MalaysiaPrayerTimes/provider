@@ -1,6 +1,8 @@
 <?php
 
 use Geocoder\Model\Address;
+use Geocoder\Model\AdminLevel;
+use Geocoder\Model\AdminLevelCollection;
 use Geocoder\Model\Country;
 use Geocoder\ProviderAggregator;
 use Goutte\Client;
@@ -138,6 +140,40 @@ class JakimProviderTest extends TestCase
             $this->assertNotEmpty($code->getCity(), 'City is empty: ' . print_r($code, true));
             $this->assertNotEmpty($code->getState(), 'State is empty: ' . print_r($code, true));
         }
+    }
+
+    public function testAdminLevelFallback()
+    {
+        $batch = $this->getMockBuilder(BatchInterface::class)
+            ->getMock();
+
+        $geotools = $this->getMockBuilder(Geotools::class)
+            ->getMock();
+
+        $bgr = $this->getMockBuilder(BatchGeocoded::class)
+            ->getMock();
+
+        $geotools->method('batch')
+            ->willReturn($batch);
+
+        $batch->method('reverse')
+            ->willReturnSelf();
+
+        $batch->expects($this->once())
+            ->method('parallel')
+            ->willReturn([$bgr]);
+
+        $admin = new AdminLevel(1, 'Pulau Pinang', 'Pulau Pinang');
+        $collection = new AdminLevelCollection([$admin]);
+
+        $bgr->method('getAddress')
+            ->willReturn(new Address(null, null, null, null, null, 'Batu Maung', null, $collection,
+                new Country('Malaysia', 'MY')));
+
+        $jp = $this->getJakimProvider($geotools);
+
+        $result = $jp->getCodeByCoordinates(5.2849237, 100.2752612);
+        $this->assertEquals('png-0', $result);
     }
 
     protected function getJakimProvider($geotools = null, $geocoder = null, $goutte = null)
