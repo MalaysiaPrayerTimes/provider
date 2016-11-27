@@ -70,6 +70,8 @@ class Provider
             return $this->getTimesByCode($cache->code);
         }
 
+        $potentialLocations = [];
+
         foreach ($this->providers as $provider) {
             try {
                 $data = $provider->setYear($this->getYear())
@@ -79,10 +81,14 @@ class Provider
                 $this->cacheLocation(new LocationCache($data, $lng, $lat));
                 return $this->getTimesByCode($data);
             } catch (DataNotAvailableException $e) {
+                $potentialLocations = array_unique(array_merge($potentialLocations, $e->getPotentialLocations()));
             }
         }
 
-        throw new DataNotAvailableException();
+        $e = new DataNotAvailableException();
+        $e->setPotentialLocations($potentialLocations);
+
+        throw $e;
     }
 
     public function getSupportedCodes(): array
@@ -146,7 +152,7 @@ class Provider
 
         $this->cache->cacheLocation($location);
     }
-    
+
     public function setCache($cache)
     {
         $this->cache = $cache;
@@ -156,8 +162,8 @@ class Provider
     public function getYear()
     {
         if (!isset($this->year) || is_null($this->year)) {
-            $m = (int)date('m');
-            $year = (int)date('Y');
+            $m = (int) date('m');
+            $year = (int) date('Y');
 
             if ($this->getMonth() < $m) {
                 $this->year = $year + 1;
@@ -178,7 +184,7 @@ class Provider
     public function getMonth()
     {
         if (!isset($this->month) || is_null($this->month)) {
-            $this->month = (int)date('m');
+            $this->month = (int) date('m');
         }
 
         return $this->month;
