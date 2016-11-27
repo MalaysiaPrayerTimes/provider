@@ -38,6 +38,7 @@ class JakimProvider extends BaseProvider
     {
         /** @var Address[] $results */
         $results = $this->reverseGeocode($lat, $lng);
+        $potentialLocations = [];
         $code = null;
 
         if (empty($results)) {
@@ -56,6 +57,7 @@ class JakimProvider extends BaseProvider
             }
 
             try {
+                $potentialLocations[] = $locality;
                 $code = $this->getCodeByDistrict($locality);
                 return $code->getCode();
             } catch (InvalidCodeException $e) {
@@ -66,6 +68,7 @@ class JakimProvider extends BaseProvider
 
             foreach ($levels as $level) {
                 try {
+                    $potentialLocations[] = $level->getName();
                     $code = $this->getCodeByDistrict($level->getName());
                     return $code->getCode();
                 } catch (InvalidCodeException $e) {
@@ -74,6 +77,7 @@ class JakimProvider extends BaseProvider
         }
 
         $e = new DataNotAvailableException('No location found.');
+        $e->setPotentialLocations($potentialLocations);
 
         throw $e;
     }
