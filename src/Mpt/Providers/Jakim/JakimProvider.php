@@ -3,11 +3,10 @@ declare(strict_types=1);
 
 namespace Mpt\Providers\Jakim;
 
+use Geocoder\Geocoder;
+use Geocoder\Model\Address;
 use Geocoder\Model\AdminLevel;
-use Geocoder\ProviderAggregator;
 use Goutte\Client;
-use League\Geotools\Batch\BatchGeocoded;
-use League\Geotools\Geotools;
 use Mpt\Exception\ConnectException;
 use Mpt\Exception\DataNotAvailableException;
 use Mpt\Exception\InvalidCodeException;
@@ -24,9 +23,9 @@ class JakimProvider extends BaseProvider
 
     private $client;
 
-    public function __construct(Geotools $geotools, ProviderAggregator $geocoder, Client $goutte)
+    public function __construct(Geocoder $geocoder, Client $goutte)
     {
-        parent::__construct($geotools, $geocoder);
+        parent::__construct($geocoder);
         $this->client = $goutte;
     }
 
@@ -37,7 +36,7 @@ class JakimProvider extends BaseProvider
 
     public function getCodeByCoordinates($lat, $lng, int $acc = 0): string
     {
-        /** @var BatchGeocoded[] $results */
+        /** @var Address[] $results */
         $results = $this->reverseGeocode($lat, $lng);
         $code = null;
 
@@ -45,14 +44,8 @@ class JakimProvider extends BaseProvider
             throw new DataNotAvailableException('No results returned from geocoder.');
         }
 
-        foreach ($results as $result) {
-            if (!$this->isInCountry($result, 'MY')) {
-                continue;
-            }
-
-            $address = $result->getAddress();
-
-            if (is_null($address)) {
+        foreach ($results as $address) {
+            if (!$this->isInCountry($address, 'MY')) {
                 continue;
             }
 
@@ -80,7 +73,9 @@ class JakimProvider extends BaseProvider
             }
         }
 
-        throw new DataNotAvailableException('No location found.');
+        $e = new DataNotAvailableException('No location found.');
+
+        throw $e;
     }
 
     public function getTimesByCode(string $code): PrayerData
