@@ -52,15 +52,13 @@ class JakimProvider extends BaseProvider
 
             $locality = $address->getLocality();
 
-            if (is_null($locality)) {
-                continue;
-            }
-
-            try {
-                $potentialLocations[] = $locality;
-                $code = $this->getCodeByDistrict($locality);
-                return $code->getCode();
-            } catch (InvalidCodeException $e) {
+            if (!empty($locality)) {
+                try {
+                    $potentialLocations[] = $locality;
+                    $code = $this->getCodeByDistrict($locality);
+                    return $code->getCode();
+                } catch (InvalidCodeException $e) {
+                }
             }
 
             /** @var AdminLevel[] $levels */
