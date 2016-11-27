@@ -10,7 +10,7 @@ interface PrayerTimeProvider
 
     public function getCodeByCoordinates($lat, $lng, int $acc = 0): string;
 
-    public function getTimesByCode(String $code): PrayerData;
+    public function getTimesByCode(string $code): PrayerData;
 
     public function getSupportedCodes(): array;
 

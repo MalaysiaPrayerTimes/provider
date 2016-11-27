@@ -6,8 +6,6 @@ use Mpt\Model\AbstractPrayerData;
 
 class JakimPrayerData extends AbstractPrayerData
 {
-    private $month;
-    private $year;
     private $code;
     private $times;
     private $place;
@@ -23,32 +21,9 @@ class JakimPrayerData extends AbstractPrayerData
         $this->lastModified = new \DateTime();
     }
 
-    public function getMonth()
-    {
-        return $this->month;
-    }
-
-    public function setMonth($month)
-    {
-        $this->month = $month;
-        return $this;
-    }
-
-    public function getYear()
-    {
-        return $this->year;
-    }
-
     /**
-     * @param $year
-     * @return JakimPrayerData
+     * @return string
      */
-    public function setYear($year)
-    {
-        $this->year = $year;
-        return $this;
-    }
-
     public function getCode()
     {
         return $this->code;
@@ -56,7 +31,7 @@ class JakimPrayerData extends AbstractPrayerData
 
     /**
      * @param $code
-     * @return JakimPrayerData
+     * @return $this
      */
     public function setCode($code)
     {
@@ -64,6 +39,9 @@ class JakimPrayerData extends AbstractPrayerData
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getTimes()
     {
         return $this->times;
@@ -71,7 +49,7 @@ class JakimPrayerData extends AbstractPrayerData
 
     /**
      * @param $times
-     * @return JakimPrayerData
+     * @return $this
      */
     public function setTimes($times)
     {
@@ -79,6 +57,9 @@ class JakimPrayerData extends AbstractPrayerData
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getPlace()
     {
         return $this->place;
@@ -86,7 +67,7 @@ class JakimPrayerData extends AbstractPrayerData
 
     /**
      * @param $place
-     * @return JakimPrayerData
+     * @return $this
      */
     public function setPlace($place)
     {
@@ -94,11 +75,17 @@ class JakimPrayerData extends AbstractPrayerData
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getProviderName()
     {
         return $this->provider;
     }
 
+    /**
+     * @return \DateTime
+     */
     public function getLastModified()
     {
         return $this->lastModified;
@@ -106,7 +93,7 @@ class JakimPrayerData extends AbstractPrayerData
 
     /**
      * @param \DateTime $date
-     * @return JakimPrayerData
+     * @return $this
      */
     public function setLastModified(\DateTime $date)
     {
@@ -114,6 +101,9 @@ class JakimPrayerData extends AbstractPrayerData
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getJakimCode()
     {
         return $this->jakim;
@@ -121,7 +111,7 @@ class JakimPrayerData extends AbstractPrayerData
 
     /**
      * @param $code
-     * @return JakimPrayerData
+     * @return $this
      */
     public function setJakimCode($code)
     {
@@ -129,6 +119,9 @@ class JakimPrayerData extends AbstractPrayerData
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getOriginCode()
     {
         return $this->origin;
@@ -136,7 +129,7 @@ class JakimPrayerData extends AbstractPrayerData
 
     /**
      * @param $origin
-     * @return JakimPrayerData
+     * @return $this
      */
     public function setOrigin($origin)
     {
@@ -144,6 +137,9 @@ class JakimPrayerData extends AbstractPrayerData
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getSource()
     {
         return $this->source;
@@ -151,7 +147,7 @@ class JakimPrayerData extends AbstractPrayerData
 
     /**
      * @param $source
-     * @return JakimPrayerData
+     * @return $this
      */
     public function setSource($source)
     {
@@ -159,6 +155,9 @@ class JakimPrayerData extends AbstractPrayerData
         return $this;
     }
 
+    /**
+     * @return array
+     */
     public function getExtraAttributes()
     {
         return [

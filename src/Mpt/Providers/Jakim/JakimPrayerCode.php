@@ -6,42 +6,9 @@ use Mpt\Model\AbstractPrayerCode;
 
 class JakimPrayerCode extends AbstractPrayerCode
 {
-    private $state;
-    private $city;
     private $jakim;
-    private $code;
     private $origin;
     private $duplicateOf;
-
-    public function getState()
-    {
-        return $this->state;
-    }
-
-    /**
-     * @param $state
-     * @return JakimPrayerCode
-     */
-    public function setState($state)
-    {
-        $this->state = $state;
-        return $this;
-    }
-
-    public function getCity()
-    {
-        return $this->city;
-    }
-
-    /**
-     * @param $city
-     * @return JakimPrayerCode
-     */
-    public function setCity($city)
-    {
-        $this->city = $city;
-        return $this;
-    }
 
     public function getJakimCode()
     {
@@ -50,26 +17,11 @@ class JakimPrayerCode extends AbstractPrayerCode
 
     /**
      * @param $jakim
-     * @return JakimPrayerCode
+     * @return $this
      */
     public function setJakimCode($jakim)
     {
         $this->jakim = $jakim;
-        return $this;
-    }
-
-    public function getCode()
-    {
-        return $this->code;
-    }
-
-    /**
-     * @param $code
-     * @return JakimPrayerCode
-     */
-    public function setCode($code)
-    {
-        $this->code = $code;
         return $this;
     }
 
@@ -80,7 +32,7 @@ class JakimPrayerCode extends AbstractPrayerCode
 
     /**
      * @param $origin
-     * @return JakimPrayerCode
+     * @return $this
      */
     public function setOriginCode($origin)
     {
@@ -88,11 +40,17 @@ class JakimPrayerCode extends AbstractPrayerCode
         return $this;
     }
 
+    /**
+     * @return bool
+     */
     public function isDuplicate()
     {
         return !empty($this->getDuplicateOf());
     }
 
+    /**
+     * @return string
+     */
     public function getDuplicateOf()
     {
         return $this->duplicateOf;
@@ -100,7 +58,7 @@ class JakimPrayerCode extends AbstractPrayerCode
 
     /**
      * @param $duplicateOf
-     * @return JakimPrayerCode
+     * @return $this
      */
     public function setDuplicateOf($duplicateOf)
     {
@@ -108,11 +66,17 @@ class JakimPrayerCode extends AbstractPrayerCode
         return $this;
     }
 
+    /**
+     * @return string
+     */
     public function getCountry()
     {
         return 'MY';
     }
 
+    /**
+     * @return string
+     */
     public function getProviderName()
     {
         return 'jakim';
