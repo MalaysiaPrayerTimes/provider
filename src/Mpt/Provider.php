@@ -2,6 +2,7 @@
 
 namespace Mpt;
 
+use Geocoder\Exception\NoResult;
 use Mpt\Exception\DataNotAvailableException;
 use Mpt\Exception\InvalidCodeException;
 use Mpt\Model\LocationCache;
@@ -87,6 +88,8 @@ class Provider
                 return $this->getTimesByCode($data);
             } catch (DataNotAvailableException $e) {
                 $potentialLocations = array_unique(array_merge($potentialLocations, $e->getPotentialLocations()));
+            } catch (NoResult $e) {
+                break;
             }
         }
 

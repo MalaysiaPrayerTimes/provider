@@ -47,6 +47,12 @@ class JakimProvider extends BaseProvider
 
         foreach ($results as $address) {
             if (!$this->isInCountry($address, 'MY')) {
+                $locality = $address->getLocality();
+
+                if (!empty($locality)) {
+                    $potentialLocations[] = $locality;
+                }
+
                 continue;
             }
 

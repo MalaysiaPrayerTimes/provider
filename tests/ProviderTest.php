@@ -240,6 +240,44 @@ class ProviderTest extends TestCase
         $provider->getTimesByCoordinate(4.5240321, 114.1578469);
     }
 
+    public function testNoGeocoderResults()
+    {
+        $myProvider = $this->getMockBuilder(PrayerTimeProvider::class)
+            ->setMockClassName('MyProvider')
+            ->getMock();
+
+        $sgProvider = $this->getMockBuilder(PrayerTimeProvider::class)
+            ->setMockClassName('SgProvider')
+            ->getMock();
+
+        $myProvider->expects($this->atLeastOnce())
+            ->method('setYear')
+            ->withAnyParameters()
+            ->willReturn($myProvider);
+
+        $myProvider->expects($this->atLeastOnce())
+            ->method('setMonth')
+            ->withAnyParameters()
+            ->willReturn($myProvider);
+
+        $sgProvider->expects($this->never())
+            ->method('setYear')
+            ->withAnyParameters()
+            ->willReturn($sgProvider);
+
+        $myProvider->expects($this->once())
+            ->method('getCodeByCoordinates')
+            ->withAnyParameters()
+            ->willThrowException(new \Geocoder\Exception\NoResult());
+
+        $provider = new Provider();
+        $provider->registerPrayerTimeProvider($myProvider);
+        $provider->registerPrayerTimeProvider($sgProvider);
+
+        $this->expectException(DataNotAvailableException::class);
+        $provider->getTimesByCoordinates(4.5240321, 114.1578469);
+    }
+
     public function testGetSupportedCodes()
     {
         $myCodes = [
