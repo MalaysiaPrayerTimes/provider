@@ -1,8 +1,10 @@
 <?php
 
 use Mpt\CacheInterface;
+use Mpt\Exception\DataNotAvailableException;
 use Mpt\Model\LocationCache;
 use Mpt\Model\PrayerData;
+use Mpt\Model\UnsupportedLocationCache;
 use Mpt\Provider;
 use Mpt\Providers\PrayerTimeProvider;
 use PHPUnit\Framework\TestCase;
@@ -174,5 +176,76 @@ class ProviderCacheTest extends TestCase
 
         $times = $provider->getTimesByCoordinate(3.04466, 101.708);
         $this->assertEquals($times, $data);
+    }
+
+    public function testUnsupportedLocationCacheAvailable()
+    {
+        $location = new UnsupportedLocationCache(4.524, 114.157, []);
+
+        $cache = $this->getMockBuilder(CacheInterface::class)
+            ->getMock();
+
+        $prayerProvider = $this->getMockBuilder(PrayerTimeProvider::class)
+            ->getMock();
+
+        $prayerProvider->expects($this->never())
+            ->method('setYear');
+
+        $prayerProvider->expects($this->never())
+            ->method('setMonth');
+
+        $prayerProvider->expects($this->never())
+            ->method('getCodeByCoordinates');
+
+        $cache->expects($this->once())
+            ->method('getNearestUnsupportedLocation')
+            ->willReturn($location);
+
+        $provider = new Provider();
+        $provider->setCache($cache);
+        $provider->registerPrayerTimeProvider($prayerProvider);
+
+        $this->expectException(DataNotAvailableException::class);
+        $provider->getTimesByCoordinates(4.524, 114.157);
+    }
+
+    public function testUnsupportedLocationCacehNotAvailable()
+    {
+        $cache = $this->getMockBuilder(CacheInterface::class)
+            ->getMock();
+
+        $prayerProvider = $this->getMockBuilder(PrayerTimeProvider::class)
+            ->getMock();
+
+        $prayerProvider->expects($this->atLeastOnce())
+            ->method('setYear')
+            ->withAnyParameters()
+            ->willReturn($prayerProvider);
+
+        $prayerProvider->expects($this->atLeastOnce())
+            ->method('setMonth')
+            ->withAnyParameters()
+            ->willReturn($prayerProvider);
+
+        $prayerProvider->expects($this->once())
+            ->method('getCodeByCoordinates')
+            ->willThrowException(new DataNotAvailableException());
+
+        $cache->expects($this->once())
+            ->method('getNearestUnsupportedLocation')
+            ->willReturn(null);
+
+        $cache->expects($this->once())
+            ->method('cacheUnsupportedLocation')
+            ->with($this->callback(function (UnsupportedLocationCache $location) {
+                return $location->lat == 4.524 && $location->lng == 114.157;
+            }));
+
+        $provider = new Provider();
+        $provider->setCache($cache);
+        $provider->registerPrayerTimeProvider($prayerProvider);
+
+        $this->expectException(DataNotAvailableException::class);
+        $provider->getTimesByCoordinates(4.524, 114.157);
     }
 }

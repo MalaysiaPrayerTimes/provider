@@ -8,7 +8,7 @@ class LocationCache
     public $lng;
     public $code;
     
-    public function __construct($code, $lng, $lat)
+    public function __construct($code, $lat, $lng)
     {
         $this->code = $code;
         $this->lng = $lng;

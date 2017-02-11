@@ -6,6 +6,7 @@ use Mpt\Exception\DataNotAvailableException;
 use Mpt\Exception\InvalidCodeException;
 use Mpt\Model\LocationCache;
 use Mpt\Model\PrayerData;
+use Mpt\Model\UnsupportedLocationCache;
 use Mpt\Providers\PrayerTimeProvider;
 
 class Provider
@@ -70,6 +71,10 @@ class Provider
             return $this->getTimesByCode($cache->code);
         }
 
+        if (!is_null($this->getNearestUnsupportedLocation($lat, $lng))) {
+            throw new DataNotAvailableException();
+        }
+
         $potentialLocations = [];
 
         foreach ($this->providers as $provider) {
@@ -78,12 +83,14 @@ class Provider
                     ->setMonth($this->getMonth())
                     ->getCodeByCoordinates($lat, $lng);
 
-                $this->cacheLocation(new LocationCache($data, $lng, $lat));
+                $this->cacheLocation(new LocationCache($data, $lat, $lng));
                 return $this->getTimesByCode($data);
             } catch (DataNotAvailableException $e) {
                 $potentialLocations = array_unique(array_merge($potentialLocations, $e->getPotentialLocations()));
             }
         }
+
+        $this->cacheUnsupportedLocation(new UnsupportedLocationCache($lat, $lng, $potentialLocations));
 
         $e = new DataNotAvailableException();
         $e->setPotentialLocations($potentialLocations);
@@ -151,6 +158,24 @@ class Provider
         }
 
         $this->cache->cacheLocation($location);
+    }
+
+    private function cacheUnsupportedLocation(UnsupportedLocationCache $location)
+    {
+        if (is_null($this->cache)) {
+            return null;
+        }
+
+        $this->cache->cacheUnsupportedLocation($location);
+    }
+
+    private function getNearestUnsupportedLocation($lat, $lng)
+    {
+        if (is_null($this->cache)) {
+            return null;
+        }
+
+        return $this->cache->getNearestUnsupportedLocation($lat, $lng);
     }
 
     public function setCache($cache)
