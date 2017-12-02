@@ -124,11 +124,8 @@ class JakimProvider extends BaseProvider
         }
     }
 
-    public function getByJakimCode($jakimCode): JakimPrayerData
+    private function parseRawJakimData(array $times)
     {
-        $url = self::getJakimUrl($jakimCode, $this->getYear(), $this->getMonth());
-        $times = $this->getPrayerTimes($jakimCode, $this->getYear(), $this->getMonth());
-
         $f = 0;
         $p = 0;
         $parsed = [];
@@ -148,8 +145,19 @@ class JakimProvider extends BaseProvider
                 }
 
                 $c = explode($s, $time);
-                $ch = (int) $c[0];
-                $cm = (int) $c[1];
+
+                if (count($c) === 2) {
+                    $ch = (int) $c[0];
+                    $cm = (int) $c[1];
+                } else {
+                    if (strlen($time) === 4) {
+                        $ch = (int) substr($time, 0, 2);
+                        $cm = (int) substr($time, 2, 2);
+                    } else {
+                        $ch = 0;
+                        $cm = 0;
+                    }
+                }
 
                 if ($i > 2) {
                     if ($i === 3) {
@@ -176,6 +184,20 @@ class JakimProvider extends BaseProvider
             }
 
             $f++;
+        }
+
+        return $parsed;
+    }
+
+    public function getByJakimCode($jakimCode): JakimPrayerData
+    {
+        $url = self::getJakimUrl($jakimCode, $this->getYear(), $this->getMonth());
+        $times = $this->getPrayerTimes($jakimCode, $this->getYear(), $this->getMonth());
+
+        try {
+            $parsed = $this->parseRawJakimData($times);
+        } catch (\Exception $e) {
+            throw new InvalidDataException("Data format at e-solat ($url) may have changed.", 0, $e);
         }
 
         self::throwIfInvalid($parsed);
@@ -257,8 +279,9 @@ class JakimProvider extends BaseProvider
         for ($d = 0; $d < count($t); $d++) {
             $pt = $t[$d];
             $v = (($pt[0] < $pt[1]) && ($pt[1] < $pt[2]) && ($pt[2] < $pt[3]) && ($pt[3] < $pt[4]) && ($pt[4] < $pt[5]));
+
             if (!$v) {
-                throw new InvalidDataException("Invalid prayer data was found: $pt");
+                throw new InvalidDataException("Invalid prayer data was found at $d.");
             }
         }
     }
@@ -380,9 +403,9 @@ class JakimProvider extends BaseProvider
     private static function getJakimUrl($jakimCode, $year, $month)
     {
         return "http://www.e-solat.gov.my/web/muatturun.php?"
-        . "zone=$jakimCode"
-        . "&year=$year"
-        . "&bulan=$month"
-        . "&jenis=year&lang=my&url=http://mpt.i906.my";
+            . "zone=$jakimCode"
+            . "&year=$year"
+            . "&bulan=$month"
+            . "&jenis=year&lang=my&url=http://mpt.i906.my";
     }
 }

@@ -114,6 +114,48 @@ class JakimProviderTest extends TestCase
         }
     }
 
+    public function testEmptyJakimPage()
+    {
+        $guzzle = $this->getGuzzle([
+            new GuzzleResponse(200, [], file_get_contents(__DIR__ . '/Resources/sgr03-2018-01-empty.html'))
+        ]);
+
+        $goutte = new Client();
+        $goutte->setClient($guzzle);
+
+        $jp = $this->getJakimProvider(null, $goutte);
+        $this->expectException(\Mpt\Exception\InvalidDataException::class);
+        $jp->getTimesByCode('ext-306');
+    }
+
+    public function testFixableMalformedJakimPage()
+    {
+        $guzzle = $this->getGuzzle([
+            new GuzzleResponse(200, [], file_get_contents(__DIR__ . '/Resources/sbh02-2018-01-fixable.html'))
+        ]);
+
+        $goutte = new Client();
+        $goutte->setClient($guzzle);
+
+        $jp = $this->getJakimProvider(null, $goutte);
+        $data = $jp->getTimesByCode('sbh-3');
+        $this->assertEquals(1512075540, $data->getTimes()[0][0]);
+    }
+
+    public function testMalformedJakimPage()
+    {
+        $guzzle = $this->getGuzzle([
+            new GuzzleResponse(200, [], file_get_contents(__DIR__ . '/Resources/sbh02-2018-01-malformed.html'))
+        ]);
+
+        $goutte = new Client();
+        $goutte->setClient($guzzle);
+
+        $jp = $this->getJakimProvider(null, $goutte);
+        $this->expectException(\Mpt\Exception\InvalidDataException::class);
+        print_r($jp->getTimesByCode('sbh-3'));
+    }
+
     public function testAdminLevelFallback()
     {
         $admin = new AdminLevel(1, 'Pulau Pinang', 'Pulau Pinang');
