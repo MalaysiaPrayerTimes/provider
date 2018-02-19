@@ -138,7 +138,10 @@ class JakimProviderTest extends TestCase
         $goutte->setClient($guzzle);
 
         $jp = $this->getJakimProvider(null, $goutte);
-        $data = $jp->getTimesByCode('sbh-3');
+        $data = $jp->setMonth(12)
+            ->setYear(2017)
+            ->getTimesByCode('sbh-3');
+
         $this->assertEquals(1512075540, $data->getTimes()[0][0]);
     }
 
