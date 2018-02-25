@@ -49,10 +49,10 @@ Negeri Sembilan,Seremban,ngs02,ngs-5
 Negeri Sembilan,Tampin,ngs01,ngs-6
 Pahang,Bentong,phg04,phg-0
 Pahang,Bera,phg03,phg-1
-Pahang,Bukit Fraser,phg05,phg-2
+Pahang,Bukit Fraser,phg06,phg-2
 Pahang,Cameron Highlands,phg06,phg-3
 Pahang,Chenor,phg03,phg-4
-Pahang,Genting Highlands,phg05,phg-5
+Pahang,Genting Highlands,phg06,phg-5
 Pahang,Jerantut,phg03,phg-6
 Pahang,Kuala Lipis,phg04,phg-7
 Pahang,Kuantan,phg02,phg-8
@@ -63,6 +63,9 @@ Pahang,Pulau Tioman,phg01,phg-12
 Pahang,Raub,phg04,phg-13
 Pahang,Rompin,phg02,phg-14
 Pahang,Temerloh,phg03,phg-15
+Pahang,Genting Sempah,phg05,phg-16
+Pahang,Janda Baik,phg05,phg-17
+Pahang,Bukit Tinggi,phg05,phg-18
 Perak,Bagan Datoh,prk05,prk-0
 Perak,Bagan Serai,prk06,prk-1
 Perak,Batu Gajah,prk02,prk-2
@@ -138,7 +141,7 @@ Sabah,Tungku,sbh03,sbh-40
 Sabah,Weston,sbh09,sbh-41
 Sarawak,Bau,swk08,swk-0
 Sarawak,Bekenu,swk02,swk-1
-Sarawak,Belaga,swk02,swk-2
+Sarawak,Belaga,swk03,swk-2
 Sarawak,Belawai,swk05,swk-3
 Sarawak,Balingian,swk03,swk-4
 Sarawak,Betong,swk06,swk-5
@@ -152,7 +155,7 @@ Sarawak,Igan,swk04,swk-12
 Sarawak,Julau,swk05,swk-13
 Sarawak,Kabong,swk06,swk-14
 Sarawak,Kanowit,swk04,swk-15
-Sarawak,Kapit,swk03,swk-16
+Sarawak,Kapit,swk04,swk-16
 Sarawak,Kuching,swk08,swk-17
 Sarawak,Lawas,swk01,swk-18
 Sarawak,Limbang,swk01,swk-19
@@ -177,17 +180,22 @@ Sarawak,Serian,swk07,swk-37
 Sarawak,Sibu,swk04,swk-38
 Sarawak,Sibuti,swk02,swk-39
 Sarawak,Simunjan,swk07,swk-40
-Sarawak,Song,swk03,swk-41
+Sarawak,Song,swk04,swk-41
 Sarawak,Spaoh,swk06,swk-42
 Sarawak,Sri Aman,swk06,swk-43
 Sarawak,Sundar,swk01,swk-44
 Sarawak,Tatau,swk03,swk-45
 Sarawak,Terusan,swk01,swk-46
+Sarawak,Suai,swk03,swk-47
+Sarawak,Pandan,swk03,swk-48
+Sarawak,Balingian,swk04,swk-49
+Sarawak,Mukah,swk04,swk-50
+Sawarak,Tanjung Manis,swk05,swk-51
 Selangor,Gombak,sgr01,sgr-0
 Selangor,Hulu Langat,sgr01,sgr-1
 Selangor,Hulu Selangor,sgr01,sgr-2
-Selangor,Klang,sgr02,sgr-3
-Selangor,Kuala Langat,sgr02,sgr-4
+Selangor,Klang,sgr03,sgr-3
+Selangor,Kuala Langat,sgr03,sgr-4
 Selangor,Kuala Selangor,sgr02,sgr-5
 Selangor,Petaling,sgr01,sgr-6
 Selangor,Rawang,sgr01,sgr-7
