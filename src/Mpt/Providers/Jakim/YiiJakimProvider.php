@@ -109,7 +109,7 @@ class YiiJakimProvider extends BaseProvider
     {
         $start = Carbon::create($year, $month);
         $end = Carbon::create($year, $month)
-            ->endOf('month');
+            ->endOfMonth();
 
         $params = [
             'datestart' => $start->format('Y-m-d'),
