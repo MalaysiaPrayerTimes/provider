@@ -1,13 +1,27 @@
 {
     "name": "mpt/provider",
+    "description": "Library for parsing JAKIM prayer data",
     "type": "library",
+    "authors": [
+        {
+            "name": "Noorzaini Ilhami",
+            "email": "ilhami@i906.my"
+        }
+    ],
     "require": {
         "php": ">=7.0.0",
         "fabpot/goutte": "~3.1",
+        "nesbot/carbon": "~1.20",
+        "php-http/client-common": "^1.8",
+        "php-http/discovery": "^1.4",
+        "php-http/httplug": "^1.1",
+        "php-http/message": "^1.7",
         "willdurand/geocoder": "~3.3"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.0|~5.0"
+        "php-http/guzzle6-adapter": "^1.1",
+        "php-http/mock-client": "^1.1",
+        "phpunit/phpunit": "^6.0"
     },
     "autoload": {
         "psr-4": {
@@ -18,5 +32,8 @@
         "psr-4": {
             "Tests\\": "tests/"
         }
+    },
+    "config": {
+        "sort-packages": true
     }
 }
