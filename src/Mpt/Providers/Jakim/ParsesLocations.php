@@ -53,7 +53,11 @@ trait ParsesLocations
                 $origin = $ext->getOriginCode();
                 $finalCode = $ext->getCode();
 
-                $info = self::getCodeInfo($ext->getOriginCode());
+                if (!empty($origin)) {
+                    $info = self::getCodeInfo($origin);
+                } else {
+                    $info = self::getCodeInfo($finalCode);
+                }
 
                 if ($info != null) {
                     $jakimCode = $info->getJakimCode();
