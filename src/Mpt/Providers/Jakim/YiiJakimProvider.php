@@ -19,6 +19,7 @@ use Mpt\Providers\BaseProvider;
 class YiiJakimProvider extends BaseProvider
 {
     use ParsesLocations;
+    use ProvidesSupportedCodes;
 
     /** @var HttpMethodsClient */
     private $httpClient;
@@ -107,7 +108,9 @@ class YiiJakimProvider extends BaseProvider
 
     private function downloadPrayerTimes($jakimCode, $year, $month)
     {
-        $start = Carbon::create($year, $month);
+        $start = Carbon::create($year, $month)
+            ->startOfMonth();
+
         $end = Carbon::create($year, $month)
             ->endOfMonth();
 
