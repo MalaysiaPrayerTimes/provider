@@ -11,8 +11,6 @@ use Mpt\Exception\ConnectException;
 use Mpt\Exception\DataNotAvailableException;
 use Mpt\Exception\InvalidCodeException;
 use Mpt\Exception\InvalidDataException;
-use Mpt\Exception\ProviderException;
-use Mpt\Model\PrayerData;
 use Mpt\Providers\BaseProvider;
 use Symfony\Component\DomCrawler\Crawler;
 

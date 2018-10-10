@@ -64,9 +64,25 @@ class YiiJakimProviderTest extends TestCase
 
         $data = $jp->setMonth(10)
             ->setYear(2018)
-            ->getTimesByCode('wlp-0');
+            ->getTimesByCode('sgr-0');
 
         $this->assertEquals(1538343900, $data->getTimes()[0][0]);
+    }
+
+    public function testExtraCodes()
+    {
+        $response = $this->getMockResponse(file_get_contents(__DIR__ . '/Resources/png01-2018-10.json'));
+
+        $client = new Client();
+        $client->addResponse($response);
+
+        $jp = $this->getJakimProvider(null, $client);
+
+        $data = $jp->setMonth(10)
+            ->setYear(2018)
+            ->getTimesByCode('ext-376');
+
+        $this->assertEquals(1538344200, $data->getTimes()[0][0]);
     }
 
     protected function getJakimProvider($geocoder = null, $client = null, $requestFactory = null)
