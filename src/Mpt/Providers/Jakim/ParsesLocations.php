@@ -90,6 +90,10 @@ trait ParsesLocations
                 $buffer = fgetcsv($handle);
                 $foundDistrict = false;
 
+                if ($buffer === false) {
+                    continue;
+                }
+
                 if (!empty($buffer[1]) && !empty($district)) {
                     $foundDistrict = strtolower($buffer[1]) == strtolower($district);
                 }
@@ -121,6 +125,10 @@ trait ParsesLocations
             while (!feof($handle)) {
                 $buffer = fgetcsv($handle);
                 $foundDistrict = false;
+
+                if ($buffer === false) {
+                    continue;
+                }
 
                 if (!empty($buffer[0]) && !empty($district)) {
                     $foundDistrict = strtolower($buffer[0]) == strtolower($district);
