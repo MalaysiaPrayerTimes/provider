@@ -17,6 +17,11 @@ trait ProvidesSupportedCodes
         if ($handle1) {
             while (!feof($handle1)) {
                 $buffer = fgetcsv($handle1);
+
+                if ($buffer === false) {
+                    continue;
+                }
+
                 $code = self::createDefaultCodeInfo($buffer[0], $buffer[1], $buffer[2], $buffer[3]);
                 $codes[] = $code;
                 $states[$code->getCode()] = $code->getState();
@@ -30,6 +35,11 @@ trait ProvidesSupportedCodes
         if ($handle2) {
             while (!feof($handle2)) {
                 $buffer = fgetcsv($handle2);
+
+                if ($buffer === false) {
+                    continue;
+                }
+
                 $code2 = self::createExtraCodeInfo($buffer[0], $buffer[1], $buffer[2], $buffer[3]);
                 $code2->setState($states[$code2->getOriginCode()]);
                 $codes[] = $code2;
